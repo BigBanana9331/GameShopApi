@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesShop", "GamesShop\Game
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesShop.Contract", "GamesShop.Contract\GamesShop.Contract.csproj", "{865BEC18-C4CA-4CAD-9BF2-6C0EA37B98AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesShop.Common", "GamesShop.Common\GamesShop.Common.csproj", "{26D27CFB-7534-4C11-B4B7-526CEBBE2CBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{865BEC18-C4CA-4CAD-9BF2-6C0EA37B98AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{865BEC18-C4CA-4CAD-9BF2-6C0EA37B98AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{865BEC18-C4CA-4CAD-9BF2-6C0EA37B98AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26D27CFB-7534-4C11-B4B7-526CEBBE2CBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26D27CFB-7534-4C11-B4B7-526CEBBE2CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26D27CFB-7534-4C11-B4B7-526CEBBE2CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26D27CFB-7534-4C11-B4B7-526CEBBE2CBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

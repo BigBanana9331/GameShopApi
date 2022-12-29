@@ -9,9 +9,9 @@ namespace GamesShop.Controllers
     [Route("games")]
     public class GamesController : ControllerBase
     {
-        private readonly IGameRepository? _gameRepository;
+        private readonly IRepository<Game>? _gameRepository;
 
-        public GamesController(IGameRepository gameRepository)
+        public GamesController(IRepository<Game> gameRepository)
         {
             _gameRepository = gameRepository;
         }
