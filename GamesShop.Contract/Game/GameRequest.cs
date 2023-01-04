@@ -1,12 +1,12 @@
-namespace GamesShop.Contract
+namespace GamesShop.Contract.Game
 {
     public record GameRequest(
         string Name,
         string ImagePath,
         string Platform,
         DateTime DateRelease,
-        Decimal BasePrice,
-        Decimal CurrentPrice,
+        decimal BasePrice,
+        decimal CurrentPrice,
         List<string> Genre,
         double Rating,
         string Publisher,
