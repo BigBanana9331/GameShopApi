@@ -1,6 +1,6 @@
+using GamesShop.Common.MongoDB;
+using GamesShop.Common.Settings;
 using GamesShop.Entities;
-using GamesShop.Repositories;
-using GamesShop.Settings;
 // using MongoDB.Driver;
 
 var serviceSettings = new ServiceSettings();

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using GamesShop.Contract;
-using GamesShop.Repositories;
 using GamesShop.Entities;
+using GamesShop.Common;
 
 namespace GamesShop.Controllers
 {
