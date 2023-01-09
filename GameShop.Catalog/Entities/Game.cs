@@ -1,6 +1,6 @@
-using GamesShop.Common;
+using GameShop.Common;
 
-namespace GamesShop.Entities
+namespace GameShop.Catalog.Entities
 {
 
     public class Game : IEntity

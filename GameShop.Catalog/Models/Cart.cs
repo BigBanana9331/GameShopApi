@@ -1,4 +1,4 @@
-namespace GamesShop.Models;
+namespace GameShop.Catalog.Models;
 
 public class Cart
 {

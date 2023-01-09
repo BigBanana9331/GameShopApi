@@ -1,10 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using GamesShop.Common.Settings;
+using GameShop.Common.Settings;
 using MongoDB.Driver;
-using GamesShop.Common;
 
-namespace GamesShop.Common.MongoDB
+namespace GameShop.Common.MongoDB
 {
     public static class Extensions
     {

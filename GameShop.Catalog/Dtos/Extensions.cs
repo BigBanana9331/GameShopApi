@@ -1,6 +1,6 @@
-using GamesShop.Models;
+using GameShop.Catalog.Models;
 
-namespace GamesShop.Dtos
+namespace GameShop.Catalog.Dtos
 {
     public static class Extensions
     {

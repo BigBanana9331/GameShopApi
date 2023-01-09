@@ -1,4 +1,4 @@
-namespace GamesShop.Contract.Game
+namespace GameShop.Contract.Game
 {
     public record GameRequest(
         string Name,

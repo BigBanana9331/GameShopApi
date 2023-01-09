@@ -1,4 +1,4 @@
-namespace GamesShop.Contract.Cart
+namespace GameShop.Contract.Cart
 {
     public record CartItemRequest(
         Guid UserId,

@@ -1,4 +1,4 @@
-namespace GamesShop.Common
+namespace GameShop.Common
 {
     public interface IEntity
     {

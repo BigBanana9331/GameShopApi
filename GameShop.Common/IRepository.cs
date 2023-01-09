@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace GamesShop.Common
+namespace GameShop.Common
 {
     public interface IRepository<T> where T : IEntity
     {

@@ -1,18 +1,22 @@
-using GamesShop.Cart.Entities;
-using GamesShop.Common;
+using GameShop.Cart.Client;
+using GameShop.Cart.Dtos;
+using GameShop.Cart.Entities;
+using GameShop.Common;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GamesShop.Cart.Controller
+namespace GameShop.Cart.Controller
 {
     [ApiController]
-    [Route("items")]
-    public class ItemsController : ControllerBase
+    [Route("cart")]
+    public class CartItemsController : ControllerBase
     {
         public readonly IRepository<CartItem> _itemsRepository;
+        public readonly GameClient _gameClient;
 
-        public ItemsController(IRepository<CartItem> itemsRepository)
+        public CartItemsController(IRepository<CartItem> itemsRepository, GameClient gameClient)
         {
             _itemsRepository = itemsRepository;
+            _gameClient = gameClient;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CartItemReponse>>> GetAsync(Guid UserId)
@@ -22,8 +26,14 @@ namespace GamesShop.Cart.Controller
                 return BadRequest();
             }
 
-            var items = (await _itemsRepository.GetAllAsync(item => item.UserId == UserId)).Select(item => item.MapCartResponse());
-            return Ok(items);
+            // var items = (await _itemsRepository.GetAllAsync(item => item.UserId == UserId)).Select(item => item.MapCartResponse());
+            var catalog = await _gameClient.GetCartItemsAsync();
+            var cartItemEntities = await _itemsRepository.GetAllAsync(item => item.UserId == UserId);
+            var cartItemsResponse = cartItemEntities.Select(cartItem=>{
+                var game = catalog.Single(game => game.GameId == cartItem.GameId);
+                return cartItem.MapCartResponse(game.Name, game.ImagePath, game.Platform, game.DateRelease, game.BasePrice, game.CurrentPrice, game.Genre, game.Rating, game.Publisher, game.Developer);
+            });
+            return Ok(cartItemsResponse);
         }
         [HttpPost]
         public async Task<ActionResult> CreateAsync(GrantCartRequest request)

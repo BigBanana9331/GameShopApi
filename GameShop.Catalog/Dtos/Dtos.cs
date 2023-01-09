@@ -1,4 +1,4 @@
-namespace GamesShop.Dtos
+namespace GameShop.Catalog.Dtos
 {
     public record GameDto(
         Guid id,
@@ -12,8 +12,6 @@ namespace GamesShop.Dtos
         double Rating,
         string Publisher,
         string Developer
-    // DateTime CreateDate,
-    // DateTime LastModified
     );
     public record CreateGameDto(
         string Name,

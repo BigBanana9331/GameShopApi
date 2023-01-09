@@ -1,4 +1,4 @@
-namespace GamesShop.Common.Settings
+namespace GameShop.Common.Settings
 {
     public class ServiceSettings
     {

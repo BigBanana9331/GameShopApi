@@ -1,6 +1,8 @@
-using GamesShop.Common.MongoDB;
-using GamesShop.Common.Settings;
-using GamesShop.Entities;
+using GameShop.Common.MongoDB;
+using GameShop.Common.Settings;
+using GameShop.Catalog.Entities;
+using MassTransit;
+using GameShop.Catalog.Settings;
 // using MongoDB.Driver;
 
 var serviceSettings = new ServiceSettings();
@@ -8,19 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
-// builder.Services.AddSingleton(serviceProvider =>
-// {
-//     var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-//     var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-//     return mongoClient.GetDatabase(serviceSettings.ServiceName);
-// });
-// builder.Services.AddSingleton<IRepository<Game>>(serviceProvider =>
-// {
-//     var database = serviceProvider.GetService<IMongoDatabase>();
-//     return new MongoRepository<Game>(database, "games");
-// });
 
 builder.Services.AddMongo().AddMongoRepository<Game>("games");
+builder.Services.AddMassTransit(x =>{
+    x.UsingRabbitMq((context, configurator)=>{
+        var rabbitMQSettings = builder.Configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
+        configurator.Host(rabbitMQSettings.Host);
+        configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
+    });
+});
+// builder.Services.AddMassTransitHostedService();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

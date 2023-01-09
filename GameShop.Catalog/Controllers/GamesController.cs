@@ -1,19 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-using GamesShop.Contract;
-using GamesShop.Entities;
-using GamesShop.Common;
+using GameShop.Contract.Game;
+using GameShop.Catalog.Entities;
+using GameShop.Common;
+using MassTransit;
+using GameShop.Catalog.Contract;
 
-namespace GamesShop.Controllers
+namespace GameShop.Catalog.Controllers
 {
     [ApiController]
     [Route("games")]
     public class GamesController : ControllerBase
     {
-        private readonly IRepository<Game>? _gameRepository;
-
-        public GamesController(IRepository<Game> gameRepository)
+        private readonly IRepository<Game> _gameRepository;
+        private readonly IPublishEndpoint _publishEndpoint;
+        public GamesController(IRepository<Game> gameRepository, IPublishEndpoint publishEndpoint)
         {
             _gameRepository = gameRepository;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpPost()]
@@ -21,6 +24,18 @@ namespace GamesShop.Controllers
         {
             var game = MapGameRequest(request);
             await _gameRepository.CreateAsync(game);
+            await _publishEndpoint.Publish(new GameCreated(
+                game.Id, 
+                game.Name, 
+                game.ImagePath, 
+                game.Platform, 
+                game.DateRelease, 
+                game.BasePrice, 
+                game.CurrentPrice, 
+                game.Genre, 
+                game.Rating, 
+                game.Publisher, 
+                game.Developer));
             return CreatedAtAction(
                 nameof(GetGameAsync),
                 new { id = game.Id },
@@ -57,6 +72,18 @@ namespace GamesShop.Controllers
             }
             var game = MapGameRequest(request, id);
             await _gameRepository.UpdateAsync(game);
+            await _publishEndpoint.Publish(new GameUpdated(
+                game.Id, 
+                game.Name, 
+                game.ImagePath, 
+                game.Platform, 
+                game.DateRelease, 
+                game.BasePrice, 
+                game.CurrentPrice, 
+                game.Genre, 
+                game.Rating, 
+                game.Publisher, 
+                game.Developer));
             return NoContent();
         }
 
@@ -69,6 +96,7 @@ namespace GamesShop.Controllers
                 return NotFound();
             }
             await _gameRepository.RemoveAsync(id);
+            await _publishEndpoint.Publish(new GameDeleted(id));
             return NoContent();
         }
 

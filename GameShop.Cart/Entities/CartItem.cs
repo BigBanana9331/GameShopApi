@@ -1,6 +1,6 @@
-using GamesShop.Common;
+using GameShop.Common;
 
-namespace GamesShop.Cart
+namespace GameShop.Cart.Entities
 {
     public class CartItem : IEntity
     {
