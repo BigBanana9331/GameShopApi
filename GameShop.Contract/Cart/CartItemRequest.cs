@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace GameShop.Contract.Cart
 {
     public record CartItemRequest(
-        Guid UserId,
-        Guid GameId,
-        int Quantity
+        [Required] Guid UserId,
+        [Required] Guid GameId,
+        [Range(0,1000)] int Quantity
     );
 }

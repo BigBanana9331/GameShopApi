@@ -1,7 +1,7 @@
 namespace GameShop.Contract.Game
 {
     public record GameResponse(
-        Guid id,
+        Guid Id,
         string Name,
         string ImagePath,
         string Platform,

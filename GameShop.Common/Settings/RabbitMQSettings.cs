@@ -1,4 +1,4 @@
-namespace GameShop.Catalog.Settings
+namespace GameShop.Common.Settings
 {
     public class RabbitMQSettings
     {

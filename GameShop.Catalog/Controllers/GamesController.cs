@@ -3,12 +3,11 @@ using GameShop.Contract.Game;
 using GameShop.Catalog.Entities;
 using GameShop.Common;
 using MassTransit;
-using GameShop.Catalog.Contract;
 
 namespace GameShop.Catalog.Controllers
 {
     [ApiController]
-    [Route("games")]
+    [Route("[controller]")]
     public class GamesController : ControllerBase
     {
         private readonly IRepository<Game> _gameRepository;
@@ -25,17 +24,12 @@ namespace GameShop.Catalog.Controllers
             var game = MapGameRequest(request);
             await _gameRepository.CreateAsync(game);
             await _publishEndpoint.Publish(new GameCreated(
-                game.Id, 
-                game.Name, 
-                game.ImagePath, 
-                game.Platform, 
-                game.DateRelease, 
-                game.BasePrice, 
-                game.CurrentPrice, 
-                game.Genre, 
-                game.Rating, 
-                game.Publisher, 
-                game.Developer));
+                game.Id,
+                game.Name,
+                game.ImagePath,
+                game.BasePrice,
+                game.CurrentPrice
+            ));
             return CreatedAtAction(
                 nameof(GetGameAsync),
                 new { id = game.Id },
@@ -58,6 +52,7 @@ namespace GameShop.Catalog.Controllers
         [HttpGet()]
         public async Task<IEnumerable<GameResponse>> GetAllAsync()
         {
+
             var games = (await _gameRepository.GetAllAsync()).Select(game => MapGameResponse(game));
             return games;
         }
@@ -73,17 +68,12 @@ namespace GameShop.Catalog.Controllers
             var game = MapGameRequest(request, id);
             await _gameRepository.UpdateAsync(game);
             await _publishEndpoint.Publish(new GameUpdated(
-                game.Id, 
-                game.Name, 
-                game.ImagePath, 
-                game.Platform, 
-                game.DateRelease, 
-                game.BasePrice, 
-                game.CurrentPrice, 
-                game.Genre, 
-                game.Rating, 
-                game.Publisher, 
-                game.Developer));
+                game.Id,
+                game.Name,
+                game.ImagePath,
+                game.BasePrice,
+                game.CurrentPrice
+                ));
             return NoContent();
         }
 

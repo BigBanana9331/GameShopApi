@@ -4,6 +4,10 @@ namespace GameShop.Contract.Cart
         Guid Id,
         Guid UserId,
         Guid GameId,
+        string Name,
+        string ImagePath,
+        decimal BasePrice,
+        decimal CurrentPrice,
         int Quantity
     );
 }

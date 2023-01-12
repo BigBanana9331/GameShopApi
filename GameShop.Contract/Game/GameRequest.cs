@@ -1,12 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace GameShop.Contract.Game
 {
     public record GameRequest(
-        string Name,
+        [Required] string Name,
         string ImagePath,
         string Platform,
         DateTime DateRelease,
-        decimal BasePrice,
-        decimal CurrentPrice,
+        [Range(0, 10000000)] decimal BasePrice,
+        [Range(0, 10000000)] decimal CurrentPrice,
         List<string> Genre,
         double Rating,
         string Publisher,

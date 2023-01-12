@@ -74,10 +74,3 @@ namespace GameShop.Catalog.Entities
         }
     }
 }
-
-// public enum Platform{
-//     Steam,
-//     Epic,
-//     PlayStation,
-//     Xbox,
-// }

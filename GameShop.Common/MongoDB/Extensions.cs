@@ -2,6 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using GameShop.Common.Settings;
 using MongoDB.Driver;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson;
 
 namespace GameShop.Common.MongoDB
 {
