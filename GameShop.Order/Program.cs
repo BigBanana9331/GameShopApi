@@ -1,9 +1,14 @@
+using GameShop.Common.MassTransit;
+using GameShop.Common.MongoDB;
+using GameShop.Order.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 builder.Services.AddMongo()
-            .AddMongoRepository<CartItem>("carts")
+            .AddMongoRepository<OrderSumary>("orders")
+            .AddMongoRepository<OrderItem>("orderitems")
             .AddMongoRepository<CatalogItem>("catalogs")
             .AddMongoRepository<Customer>("customers")
             .AddMassTransitWithRabbitMq();

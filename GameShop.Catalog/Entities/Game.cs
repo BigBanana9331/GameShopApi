@@ -6,16 +6,16 @@ namespace GameShop.Catalog.Entities
     public class Game : IEntity
     {
         public Guid Id { get; }
-        public string Name { get; }
-        public string Platform { get; }
-        public string ImagePath { get; }
-        public DateTime DateRelease { get; }
-        public Decimal BasePrice { get; }
-        public Decimal CurrentPrice { get; }
-        public List<string> Genre { get; }
-        public double Rating { get; }
-        public string Publisher { get; }
-        public string Developer { get; }
+        public string Name { get; set; }
+        public string Platform { get; set; }
+        public string ImagePath { get; set; }
+        public DateTime DateRelease { get; set; }
+        public Decimal BasePrice { get; set; }
+        public Decimal CurrentPrice { get; set; }
+        public List<string> Genre { get; set; }
+        public double Rating { get; set; }
+        public string Publisher { get; set; }
+        public string Developer { get; set; }
 
         public Game(
             Guid id,

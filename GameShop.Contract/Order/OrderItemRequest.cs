@@ -1,9 +1,9 @@
-// namespace GamesShop.Contract.Order
-// {
-//     public record OrderItemRequest(
-//         Guid UserId,
-//         Guid GameId,
-//         int Quantity,
-//         decimal PurchasedPrice
-//     );
-// }
+namespace GamesShop.Contract.Order
+{
+    public record OrderItemRequest(
+        Guid OrderId,
+        Guid GameId,
+        int Quantity,
+        decimal PurchasedPrice
+    );
+}

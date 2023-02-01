@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameShop.Cart", "GameShop.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameShop.User", "GameShop.User\GameShop.User.csproj", "{BD79C070-5824-43F0-9049-B02F3E608B69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameShop.Order", "GameShop.Order\GameShop.Order.csproj", "{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,5 +88,17 @@ Global
 		{BD79C070-5824-43F0-9049-B02F3E608B69}.Release|x64.Build.0 = Release|Any CPU
 		{BD79C070-5824-43F0-9049-B02F3E608B69}.Release|x86.ActiveCfg = Release|Any CPU
 		{BD79C070-5824-43F0-9049-B02F3E608B69}.Release|x86.Build.0 = Release|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Debug|x64.Build.0 = Debug|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Debug|x86.Build.0 = Debug|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Release|x64.ActiveCfg = Release|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Release|x64.Build.0 = Release|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Release|x86.ActiveCfg = Release|Any CPU
+		{25BF6C06-D08B-4DE3-8348-D8853FD2AB8C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
