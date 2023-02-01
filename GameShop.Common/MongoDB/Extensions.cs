@@ -2,9 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using GameShop.Common.Settings;
 using MongoDB.Driver;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson;
 
 namespace GameShop.Common.MongoDB
 {
@@ -12,8 +9,6 @@ namespace GameShop.Common.MongoDB
     {
         public static IServiceCollection AddMongo(this IServiceCollection services)
         {
-            // BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-            // BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
             services.AddSingleton(serviceProvider =>
             {
                 var configuration = serviceProvider.GetService<IConfiguration>();

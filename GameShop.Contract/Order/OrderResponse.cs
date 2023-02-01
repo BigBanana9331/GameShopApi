@@ -1,11 +1,9 @@
-// namespace GamesShop.Contract.Order
-// {
-//     public record OrderResponse(
-//         Guid Id,
-//         Guid UserId,
-//         List<Guid> OrderItemId,
-//         DateTime PurchasedDate
-//         // decimal Discounted,
-//         // decimal Total  
-//     );
-// }
+namespace GamesShop.Contract.Order
+{
+    public record OrderResponse(
+        Guid Id,
+        Guid UserId,
+        decimal Discounted,
+        DateOnly PurchasedDate
+    );
+}

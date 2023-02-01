@@ -1,10 +1,10 @@
-// namespace GamesShop.Contract.Order
-// {
-//     public record OrderRequest(
-//         Guid UserId,
-//         List<Guid> OrderItemId,
-//         DateTime PurchasedDate
-//         // decimal Discounted,
-//         // decimal Total    
-//     );
-// }
+using System.ComponentModel.DataAnnotations;
+namespace GamesShop.Contract.Order
+{
+    public record OrderRequest(
+        [Required]Guid UserId,
+        decimal Discounted,
+        // decimal Total,
+        DateOnly PurchasedDate
+    );
+}
