@@ -100,6 +100,8 @@ namespace GameShop.Catalog.Controllers
                         request.BasePrice,
                         request.CurrentPrice,
                         request.Genre,
+                        request.SystemRequirement,
+                        request.Assets,
                         request.Rating,
                         request.Publisher,
                         request.Developer,

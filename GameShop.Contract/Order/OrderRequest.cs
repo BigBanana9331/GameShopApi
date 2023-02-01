@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 namespace GamesShop.Contract.Order
 {
     public record OrderRequest(
-        Guid UserId,
+        [Required]Guid UserId,
         decimal Discounted,
-        DateTime PurchasedDate
+        // decimal Total,
+        DateOnly PurchasedDate
     );
 }

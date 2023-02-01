@@ -4,6 +4,6 @@ namespace GamesShop.Contract.Order
         Guid Id,
         Guid UserId,
         decimal Discounted,
-        DateTime PurchasedDate
+        DateOnly PurchasedDate
     );
 }
