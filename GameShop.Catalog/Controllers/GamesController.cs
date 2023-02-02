@@ -18,10 +18,10 @@ namespace GameShop.Catalog.Controllers
             _publishEndpoint = publishEndpoint;
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<ActionResult<Game>> CreateGameAsync(GameRequest request)
         {
-            var game = MapGameRequest(request);
+            var game = Game.MapGameRequest(request);
             await _gameRepository.CreateAsync(game);
             await _publishEndpoint.Publish(new GameCreated(
                 game.Id,
@@ -31,33 +31,35 @@ namespace GameShop.Catalog.Controllers
                 game.CurrentPrice
             ));
             return CreatedAtAction(
-                nameof(GetGameAsync),
+                nameof(GetGameByIdAsync),
                 new { id = game.Id },
                 game
             );
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<GameResponse>> GetGameAsync(Guid id)
+        [HttpGet]
+        public async Task<IEnumerable<GameResponse>> GetAllAsync()
+        {
+
+            var games = (await _gameRepository.GetAllAsync()).Select(game => Game.MapGameResponse(game));
+            return games;
+        }
+
+        // games/id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GameResponse>> GetGameByIdAsync(Guid id)
         {
             var game = await _gameRepository.GetAsync(id);
             if (game == null)
             {
                 return NotFound();
             }
-            var response = MapGameResponse(game);
+            var response = Game.MapGameResponse(game);
             return response;
         }
 
-        [HttpGet()]
-        public async Task<IEnumerable<GameResponse>> GetAllAsync()
-        {
-
-            var games = (await _gameRepository.GetAllAsync()).Select(game => MapGameResponse(game));
-            return games;
-        }
-
-        [HttpPut("{id:guid}")]
+        // games/id
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGameAsync(Guid id, GameRequest request)
         {
             var existingGame = await _gameRepository.GetAsync(id);
@@ -65,7 +67,7 @@ namespace GameShop.Catalog.Controllers
             {
                 return NotFound();
             }
-            var game = MapGameRequest(request, id);
+            var game = Game.MapGameRequest(request, id);
             await _gameRepository.UpdateAsync(game);
             await _publishEndpoint.Publish(new GameUpdated(
                 game.Id,
@@ -77,7 +79,8 @@ namespace GameShop.Catalog.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:guid}")]
+        // games/id
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGameAsync(Guid id)
         {
             var existingGame = await _gameRepository.GetAsync(id);
@@ -88,41 +91,6 @@ namespace GameShop.Catalog.Controllers
             await _gameRepository.RemoveAsync(id);
             await _publishEndpoint.Publish(new GameDeleted(id));
             return NoContent();
-        }
-
-        private static Game MapGameRequest(GameRequest request, Guid? id = null)
-        {
-            return Game.Create(
-                        request.Name,
-                        request.ImagePath,
-                        request.Platform,
-                        request.DateRelease,
-                        request.BasePrice,
-                        request.CurrentPrice,
-                        request.Genre,
-                        request.SystemRequirement,
-                        request.Assets,
-                        request.Rating,
-                        request.Publisher,
-                        request.Developer,
-                        id
-                    );
-        }
-        private static GameResponse MapGameResponse(Game game)
-        {
-            return new GameResponse(
-                        game.Id,
-                        game.Name,
-                        game.ImagePath,
-                        game.Platform,
-                        game.DateRelease,
-                        game.BasePrice,
-                        game.CurrentPrice,
-                        game.Genre,
-                        game.Rating,
-                        game.Publisher,
-                        game.Developer
-                    );
         }
     }
 }

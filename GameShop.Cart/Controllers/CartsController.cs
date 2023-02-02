@@ -21,25 +21,26 @@ namespace GameShop.Cart.Controller
             _gamesRepository = gamesRepository;
             _customerRepository = customerRepository;
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CartItemResponse>>> GetAsync(Guid userId)
+        // carts/user/id
+        [HttpGet("user/{id}")]
+        public async Task<ActionResult<IEnumerable<CartItemResponse>>> GetAsync(Guid id)
         {
-            if (userId == Guid.Empty)
+            if (id == Guid.Empty)
             {
                 return BadRequest();
             }
-            var customerEntities = await _customerRepository.GetAsync(userId);
+            var customerEntities = await _customerRepository.GetAsync(id);
             if (customerEntities == null)
             {
                 return NotFound(customerEntities);
             }
-            var cartItemEntities = await _itemsRepository.GetAllAsync(item => item.UserId == userId);
+            var cartItemEntities = await _itemsRepository.GetAllAsync(item => item.UserId == id);
             var gameIds = cartItemEntities.Select(game => game.GameId);
             var gamesEntities = await _gamesRepository.GetAllAsync(game => gameIds.Contains(game.Id));
             var cartItemsResponse = cartItemEntities.Select(cartItem =>
             {
                 var game = gamesEntities.Single(game => game.Id == cartItem.GameId);
-                return MapCartResponse(cartItem, game.Name, game.ImagePath, game.BasePrice, game.CurrentPrice);
+                return CartItem.MapCartResponse(cartItem, game.Name, game.ImagePath, game.BasePrice, game.CurrentPrice);
             });
             return Ok(cartItemsResponse);
         }
@@ -70,25 +71,18 @@ namespace GameShop.Cart.Controller
             }
             return Ok();
         }
-        public static CartItemResponse MapCartResponse(
-            CartItem item,
-            string name,
-            string imagePath,
-            decimal basePrice,
-            decimal currentPrice
-            )
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeteleAsync(Guid id)
         {
-            return new CartItemResponse(
-                item.Id,
-                item.UserId,
-                item.GameId,
-                name,
-                imagePath,
-                basePrice,
-                currentPrice,
-                item.Quantity
-            );
+            var existingItem = await _itemsRepository.GetAsync(id);
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+            await _itemsRepository.RemoveAsync(id);
+            return NoContent();
         }
+        
     }
 
 

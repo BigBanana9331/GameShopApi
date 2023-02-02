@@ -1,4 +1,5 @@
 using GameShop.Common;
+using GameShop.Contract.Cart;
 
 namespace GameShop.Cart.Entities
 {
@@ -15,6 +16,25 @@ namespace GameShop.Cart.Entities
             UserId = userId;
             GameId = gameId;
             Quantity = quantity;
+        }
+        public static CartItemResponse MapCartResponse(
+            CartItem item,
+            string name,
+            string imagePath,
+            decimal basePrice,
+            decimal currentPrice
+            )
+        {
+            return new CartItemResponse(
+                item.Id,
+                item.UserId,
+                item.GameId,
+                name,
+                imagePath,
+                basePrice,
+                currentPrice,
+                item.Quantity
+            );
         }
     }
 

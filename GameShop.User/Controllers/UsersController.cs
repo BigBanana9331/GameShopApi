@@ -18,25 +18,7 @@ public class UsersController : ControllerBase
         _userRepository = userRepository;
         _publishEndpoint = publishEndpoint;
     }
-
-    [HttpGet]
-    public async Task<IEnumerable<UserResponse>> GetUsersAsync()
-    {
-        var users = (await _userRepository.GetAllAsync()).Select(user => MapUserResponse(user));
-        return users;
-    }
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<UserResponse>> GetUserAsync(Guid id)
-    {
-        var user = await _userRepository.GetAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-        var response = MapUserResponse(user);
-        return response;
-    }
-    [HttpPost()]
+    [HttpPost]
     public async Task<ActionResult<UserAcount>> CreateGameAsync(UserRequest request)
     {
         var user = MapUserRequest(request);
@@ -50,7 +32,25 @@ public class UsersController : ControllerBase
             user
         );
     }
-    [HttpPut("{id:guid}")]
+    [HttpGet]
+    public async Task<IEnumerable<UserResponse>> GetUsersAsync()
+    {
+        var users = (await _userRepository.GetAllAsync()).Select(user => MapUserResponse(user));
+        return users;
+    }
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserResponse>> GetUserAsync(Guid id)
+    {
+        var user = await _userRepository.GetAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        var response = MapUserResponse(user);
+        return response;
+    }
+    
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUserAsync(Guid id, UserRequest request)
     {
         var existingUser = await _userRepository.GetAsync(id);
@@ -67,7 +67,7 @@ public class UsersController : ControllerBase
         //     ));
         return NoContent();
     }
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserAsync(Guid id)
     {
         var existingUser = await _userRepository.GetAsync(id);

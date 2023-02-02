@@ -1,4 +1,5 @@
 using GameShop.Common;
+using GamesShop.Contract.Order;
 
 namespace GameShop.Order.Entities{
     public class OrderItem : IEntity
@@ -15,6 +16,14 @@ namespace GameShop.Order.Entities{
             GameId = gameId;
             Quantity = quantity;
             PurchasedPrice = purchasedPrice;
+        }
+        public static OrderItemResponse MapOrderItemResponse(OrderItem item)
+        {
+            return new OrderItemResponse(item.Id, item.OrderId,item.GameId, item.Quantity, item.PurchasedPrice);
+        }
+        public static OrderItem MapOrderItemRequest(OrderItemRequest request)
+        {
+            return new OrderItem(Guid.NewGuid(),request.OrderId, request.GameId, request.Quantity, request.PurchasedPrice);
         }
     }
 }

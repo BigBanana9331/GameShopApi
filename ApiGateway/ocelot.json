@@ -1,0 +1,181 @@
+{
+    "Routes": [
+        {
+            "DownstreamPathTemplate": "/games",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/games",
+            "UpstreamHttpMethod": [
+                "Get",
+                "Post"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/games/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/games/{id}",
+            "UpstreamHttpMethod": [
+                "Get",
+                "Put",
+                "Delete"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/carts",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 6001
+                }
+            ],
+            "UpstreamPathTemplate": "/carts",
+            "UpstreamHttpMethod": [
+                "Post"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/carts/{userid}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 6001
+                }
+            ],
+            "UpstreamPathTemplate": "/carts/{userid}",
+            "UpstreamHttpMethod": [
+                "Get"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/carts/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 6001
+                }
+            ],
+            "UpstreamPathTemplate": "/carts/{id}",
+            "UpstreamHttpMethod": [
+                "Delete"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orders",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orders",
+            "UpstreamHttpMethod": [
+                "Get",
+                "Post"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orders/orderid",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orders/orderid",
+            "UpstreamHttpMethod": [
+                "Get",
+                "Put",
+                "Delete"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orders/userid",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orders/userid",
+            "UpstreamHttpMethod": [
+                "Get"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orderitems/userid",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orderitems/userid",
+            "UpstreamHttpMethod": [
+                "Get"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orderitems",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orderitems",
+            "UpstreamHttpMethod": [
+                "Post"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orderitems/userid",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orderitems/userid",
+            "UpstreamHttpMethod": [
+                "Get"
+            ]
+        },
+        {
+            "DownstreamPathTemplate": "/orderitems/id",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7001
+                }
+            ],
+            "UpstreamPathTemplate": "/orderitems",
+            "UpstreamHttpMethod": [
+                "Delete"
+            ]
+        }
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "https://localhost:5000"
+    }
+}

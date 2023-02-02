@@ -1,4 +1,5 @@
 using GameShop.Common;
+using GameShop.Contract.Game;
 
 namespace GameShop.Catalog.Entities
 {
@@ -13,13 +14,13 @@ namespace GameShop.Catalog.Entities
         public Decimal BasePrice { get; set; }
         public Decimal CurrentPrice { get; set; }
         public List<string> Genre { get; set; }
-        public Dictionary<string, string> SystemRequirement {get; set;}
-        public List<string> Assets {get; set;} //list of images and videos urls
+        public Dictionary<string, string> SystemRequirement { get; set; }
+        public List<string> Assets { get; set; } //list of images and videos urls
         public double Rating { get; set; }
         public string Publisher { get; set; }
         public string Developer { get; set; }
 
-        public Game(
+        private Game(
             Guid id,
             string name,
             string imagePath,
@@ -81,6 +82,40 @@ namespace GameShop.Catalog.Entities
                 publisher,
                 developer
             );
+        }
+        public static Game MapGameRequest(GameRequest request, Guid? id = null)
+        {
+            return Game.Create(
+                        request.Name,
+                        request.ImagePath,
+                        request.Platform,
+                        request.DateRelease,
+                        request.BasePrice,
+                        request.CurrentPrice,
+                        request.Genre,
+                        request.SystemRequirement,
+                        request.Assets,
+                        request.Rating,
+                        request.Publisher,
+                        request.Developer,
+                        id
+                    );
+        }
+        public static GameResponse MapGameResponse(Game game)
+        {
+            return new GameResponse(
+                        game.Id,
+                        game.Name,
+                        game.ImagePath,
+                        game.Platform,
+                        game.DateRelease,
+                        game.BasePrice,
+                        game.CurrentPrice,
+                        game.Genre,
+                        game.Rating,
+                        game.Publisher,
+                        game.Developer
+                    );
         }
     }
 }
