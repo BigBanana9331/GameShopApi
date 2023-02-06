@@ -16,10 +16,12 @@ builder.Services.AddMongo()
 
 
 // AddCatalogClient(builder);
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => 
+{ 
+    options.SuppressAsyncSuffixInActionNames = false; 
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
 var app = builder.Build();
 

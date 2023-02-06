@@ -13,8 +13,11 @@ namespace GameShop.Order.Controllers
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<OrderItem> _itemsRepository;
         private readonly IRepository<CatalogItem> _gamesRepository;
+
+
+
         public OrdersController(
-            IRepository<OrderSumary> ordersRepository, 
+            IRepository<OrderSumary> ordersRepository,
             IRepository<Customer> customerRepository,
             IRepository<OrderItem> itemsRepository,
             IRepository<CatalogItem> gamesRepository
@@ -25,8 +28,10 @@ namespace GameShop.Order.Controllers
             _itemsRepository = itemsRepository;
             _gamesRepository = gamesRepository;
         }
+
+
         [HttpPost]
-        public async Task<ActionResult> CreateAsync(OrderRequest request)
+        public async Task<ActionResult> CreateOrderAsync(OrderRequest request)
         {
             var user = await _customerRepository.GetAsync(request.UserId);
             if (user == null)
@@ -37,21 +42,22 @@ namespace GameShop.Order.Controllers
             await _ordersRepository.CreateAsync(order);
             return Ok();
         }
+
         [HttpGet]
-        public async Task<IEnumerable<OrderResponse>> GetAllAsync()
+        public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
         {
-            var orders = (await _ordersRepository.GetAllAsync()).Select(order =>OrderSumary.MapOrderResponse(order));
+            var orders = (await _ordersRepository.GetAllAsync()).Select(order => OrderSumary.MapOrderResponse(order));
             return orders;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<OrderResponse>> GetAsync(Guid id)
+        [HttpGet("{orderId}")]
+        public async Task<ActionResult<OrderResponse>> GetOrderByIdAsync(Guid orderId)
         {
-            if (id == Guid.Empty)
+            if (orderId == Guid.Empty)
             {
                 return BadRequest();
             }
-            var order = await _ordersRepository.GetAsync(id);
+            var order = await _ordersRepository.GetAsync(orderId);
             if (order == null)
             {
                 return NotFound();
@@ -59,18 +65,10 @@ namespace GameShop.Order.Controllers
             return OrderSumary.MapOrderResponse(order);
         }
 
-        [HttpGet("user/{id}")]
-        public async Task<IEnumerable<OrderResponse>> GetAllByUserAsync(Guid id)
+        [HttpPut("{orderId}")]
+        public async Task<ActionResult> UpdateOrderAsync(Guid orderId, OrderRequest request)
         {
-            var orders = (await _ordersRepository.GetAllAsync(order => order.UserId == id))
-                                    .Select(order =>OrderSumary.MapOrderResponse(order));
-            return orders;
-        }
-        
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync(Guid id, OrderRequest request)
-        {
-            var order = await _ordersRepository.GetAsync(id);
+            var order = await _ordersRepository.GetAsync(orderId);
             if (order == null)
             {
                 return NotFound();
@@ -81,50 +79,48 @@ namespace GameShop.Order.Controllers
             await _ordersRepository.UpdateAsync(order);
             return NoContent();
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(Guid id)
+
+        [HttpDelete("{orderId}")]
+        public async Task<ActionResult> DeleteOrderAsync(Guid orderId)
         {
-            var order = await _ordersRepository.GetAsync(id);
+            var order = await _ordersRepository.GetAsync(orderId);
             if (order == null)
             {
                 return NotFound();
             }
-            await _ordersRepository.RemoveAsync(id);
+            await _ordersRepository.RemoveAsync(orderId);
             return NoContent();
         }
-        
-        // OrderItem action
-        [HttpGet("{id}/items")]
-        public async Task<ActionResult<IEnumerable<OrderItemResponse>>> GetAllAsync(Guid id)
+
+        [HttpGet("user/{userId}")]  // orders/user/{userId}
+        public async Task<IEnumerable<OrderResponse>> GetAllOrderItemsByUserAsync(Guid userId)
         {
-            if (id == Guid.Empty)
+            var orders = (await _ordersRepository.GetAllAsync(order => order.UserId == userId))
+                                    .Select(order => OrderSumary.MapOrderResponse(order));
+            return orders;
+        }
+
+
+        // OrderItem action
+        [HttpGet("{orderId}/items")]
+        public async Task<ActionResult<IEnumerable<OrderItemResponse>>> GetAllOrderItemsAsync(Guid orderId)
+        {
+            if (orderId == Guid.Empty)
             {
                 return BadRequest();
             }
-            var order = await _ordersRepository.GetAsync(id);
+            var order = await _ordersRepository.GetAsync(orderId);
             if (order == null)
             {
                 return NotFound();
             }
-            var orderitems = (await _itemsRepository.GetAllAsync(item => item.OrderId == id)).Select(item => OrderItem.MapOrderItemResponse(item));
+            var orderitems = (await _itemsRepository.GetAllAsync(item => item.OrderId == orderId)).Select(item => OrderItem.MapOrderItemResponse(item));
             return Ok(orderitems);
         }
-        [HttpDelete("items/{id}")]
-        public async Task<ActionResult> DeteleAsync(Guid id)
+        [HttpPost("{orderId}/items")]
+        public async Task<ActionResult<OrderItemResponse>> CreateOrderItemAsync(Guid orderId, OrderItemRequest request)
         {
-            var existingItem = await _itemsRepository.GetAsync(id);
-            if (existingItem == null)
-            {
-                return NotFound();
-            }
-            await _itemsRepository.RemoveAsync(id);
-            return NoContent();
-        }
-        
-        [HttpPost]
-        public async Task<ActionResult<OrderItemResponse>> CreateAsync(OrderItemRequest request)
-        {
-            var order = await _ordersRepository.GetAsync(request.OrderId);
+            var order = await _ordersRepository.GetAsync(orderId);
             if (order == null)
             {
                 return NotFound("Order not found!");
@@ -132,6 +128,17 @@ namespace GameShop.Order.Controllers
             var orderItem = OrderItem.MapOrderItemRequest(request);
             await _itemsRepository.CreateAsync(orderItem);
             return Ok();
+        }
+        [HttpDelete("{orderId}/items/{orderItemId}")]
+        public async Task<ActionResult> DeteleOrderItemAsync(Guid orderItemId)
+        {
+            var existingItem = await _itemsRepository.GetAsync(orderItemId);
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+            await _itemsRepository.RemoveAsync(orderItemId);
+            return NoContent();
         }
     }
 }

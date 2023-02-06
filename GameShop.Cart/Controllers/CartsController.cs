@@ -22,19 +22,19 @@ namespace GameShop.Cart.Controller
             _customerRepository = customerRepository;
         }
         // carts/user/id
-        [HttpGet("user/{id}")]
-        public async Task<ActionResult<IEnumerable<CartItemResponse>>> GetAsync(Guid id)
+        [HttpGet("user/{userId}/items")]
+        public async Task<ActionResult<IEnumerable<CartItemResponse>>> GetAsync(Guid userId)
         {
-            if (id == Guid.Empty)
+            if (userId == Guid.Empty)
             {
                 return BadRequest();
             }
-            var customerEntities = await _customerRepository.GetAsync(id);
+            var customerEntities = await _customerRepository.GetAsync(userId);
             if (customerEntities == null)
             {
                 return NotFound(customerEntities);
             }
-            var cartItemEntities = await _itemsRepository.GetAllAsync(item => item.UserId == id);
+            var cartItemEntities = await _itemsRepository.GetAllAsync(item => item.UserId == userId);
             var gameIds = cartItemEntities.Select(game => game.GameId);
             var gamesEntities = await _gamesRepository.GetAllAsync(game => gameIds.Contains(game.Id));
             var cartItemsResponse = cartItemEntities.Select(cartItem =>
@@ -44,14 +44,14 @@ namespace GameShop.Cart.Controller
             });
             return Ok(cartItemsResponse);
         }
-        [HttpPost]
-        public async Task<ActionResult> CreateAsync(CartItemRequest request)
+        [HttpPost("user/{userId}/items")]
+        public async Task<ActionResult> CreateAsync(Guid userId, CartItemRequest request)
         {
 
-            var cartItem = await _itemsRepository.GetAsync(item => item.UserId == request.UserId && item.GameId == request.GameId);
+            var cartItem = await _itemsRepository.GetAsync(item => item.UserId == userId && item.GameId == request.GameId);
             if (cartItem == null)
             {
-                var customerEntities = await _customerRepository.GetAsync(request.UserId);
+                var customerEntities = await _customerRepository.GetAsync(userId);
                 if (customerEntities == null)
                 {
                     return NotFound(customerEntities);
@@ -61,7 +61,7 @@ namespace GameShop.Cart.Controller
                 {
                     return NotFound(gamesEntities);
                 }
-                cartItem = new CartItem(Guid.NewGuid(), request.UserId, request.GameId, request.Quantity);
+                cartItem = new CartItem(Guid.NewGuid(), userId, request.GameId, request.Quantity);
                 await _itemsRepository.CreateAsync(cartItem);
             }
             else
@@ -71,18 +71,18 @@ namespace GameShop.Cart.Controller
             }
             return Ok();
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeteleAsync(Guid id)
+        [HttpDelete("user/{userId}/items/{cartItemId}")]
+        public async Task<ActionResult> DeteleAsync(Guid cartItemId)
         {
-            var existingItem = await _itemsRepository.GetAsync(id);
+            var existingItem = await _itemsRepository.GetAsync(cartItemId);
             if (existingItem == null)
             {
                 return NotFound();
             }
-            await _itemsRepository.RemoveAsync(id);
+            await _itemsRepository.RemoveAsync(cartItemId);
             return NoContent();
         }
-        
+
     }
 
 

@@ -46,10 +46,10 @@ namespace GameShop.Catalog.Controllers
         }
 
         // games/id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GameResponse>> GetGameByIdAsync(Guid id)
+        [HttpGet("{gameId}")]
+        public async Task<ActionResult<GameResponse>> GetGameByIdAsync(Guid gameId)
         {
-            var game = await _gameRepository.GetAsync(id);
+            var game = await _gameRepository.GetAsync(gameId);
             if (game == null)
             {
                 return NotFound();
@@ -59,15 +59,15 @@ namespace GameShop.Catalog.Controllers
         }
 
         // games/id
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateGameAsync(Guid id, GameRequest request)
+        [HttpPut("{gameId}")]
+        public async Task<IActionResult> UpdateGameAsync(Guid gameId, GameRequest request)
         {
-            var existingGame = await _gameRepository.GetAsync(id);
+            var existingGame = await _gameRepository.GetAsync(gameId);
             if (existingGame == null)
             {
                 return NotFound();
             }
-            var game = Game.MapGameRequest(request, id);
+            var game = Game.MapGameRequest(request, gameId);
             await _gameRepository.UpdateAsync(game);
             await _publishEndpoint.Publish(new GameUpdated(
                 game.Id,
@@ -80,16 +80,16 @@ namespace GameShop.Catalog.Controllers
         }
 
         // games/id
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGameAsync(Guid id)
+        [HttpDelete("{gameId}")]
+        public async Task<IActionResult> DeleteGameAsync(Guid gameId)
         {
-            var existingGame = await _gameRepository.GetAsync(id);
+            var existingGame = await _gameRepository.GetAsync(gameId);
             if (existingGame == null)
             {
                 return NotFound();
             }
-            await _gameRepository.RemoveAsync(id);
-            await _publishEndpoint.Publish(new GameDeleted(id));
+            await _gameRepository.RemoveAsync(gameId);
+            await _publishEndpoint.Publish(new GameDeleted(gameId));
             return NoContent();
         }
     }

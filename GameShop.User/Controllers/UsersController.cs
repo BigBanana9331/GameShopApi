@@ -10,85 +10,75 @@ namespace GameShop.User.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IRepository<UserAcount> _userRepository;
+    private readonly IRepository<UserAccount> _userRepository;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public UsersController(IRepository<UserAcount> userRepository, IPublishEndpoint publishEndpoint)
+    public UsersController(IRepository<UserAccount> userRepository, IPublishEndpoint publishEndpoint)
     {
         _userRepository = userRepository;
         _publishEndpoint = publishEndpoint;
     }
     [HttpPost]
-    public async Task<ActionResult<UserAcount>> CreateGameAsync(UserRequest request)
+    public async Task<ActionResult<UserAccount>> CreateUserAsync(UserRequest request)
     {
-        var user = MapUserRequest(request);
+        var user = UserAccount.MapUserRequest(request);
         await _userRepository.CreateAsync(user);
         await _publishEndpoint.Publish(new UserCreated(
                 user.Id
             ));
         return CreatedAtAction(
-            nameof(GetUserAsync),
+            nameof(GetUserByIdAsync),
             new { id = user.Id },
             user
         );
     }
     [HttpGet]
-    public async Task<IEnumerable<UserResponse>> GetUsersAsync()
+    public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
     {
-        var users = (await _userRepository.GetAllAsync()).Select(user => MapUserResponse(user));
+        var users = (await _userRepository.GetAllAsync()).Select(user => UserAccount.MapUserResponse(user));
         return users;
     }
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserResponse>> GetUserAsync(Guid id)
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<UserResponse>> GetUserByIdAsync(Guid userId)
     {
-        var user = await _userRepository.GetAsync(id);
+        var user = await _userRepository.GetAsync(userId);
         if (user == null)
         {
             return NotFound();
         }
-        var response = MapUserResponse(user);
+        var response = UserAccount.MapUserResponse(user);
         return response;
     }
-    
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserAsync(Guid id, UserRequest request)
+
+    [HttpPut("{userId}")]
+    public async Task<IActionResult> UpdateUserAsync(Guid userId, UserRequest request)
     {
-        var existingUser = await _userRepository.GetAsync(id);
+        var existingUser = await _userRepository.GetAsync(userId);
         if (existingUser == null)
         {
             return NotFound();
         }
-        var user = MapUserRequest(request, id);
+        var user = UserAccount.MapUserRequest(request, userId);
         await _userRepository.UpdateAsync(user);
-        // await _publishEndpoint.Publish(new UserUpdated(
-        //         user.Id,
-        //         user.UserName,
-        //         user.Email
-        //     ));
-        return NoContent();
-    }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUserAsync(Guid id)
-    {
-        var existingUser = await _userRepository.GetAsync(id);
-        if (existingUser == null)
-        {
-            return NotFound();
-        }
-        await _userRepository.RemoveAsync(id);
-        await _publishEndpoint.Publish(new UserDeleted(
-                id
+        await _publishEndpoint.Publish(new UserUpdated(
+                user.Id,
+                user.UserName,
+                user.Email
             ));
         return NoContent();
     }
-
-    private UserAcount MapUserRequest(UserRequest request, Guid? id = null)
+    [HttpDelete("{userId}")]
+    public async Task<IActionResult> DeleteUserAsync(Guid userId)
     {
-        return UserAcount.Create(request.UserName, request.Email, request.PhoneNumber, request.Password, request.AvatarPath, id);
-    }
-
-    private UserResponse MapUserResponse(UserAcount user)
-    {
-        return new UserResponse(user.Id, user.UserName, user.Email, user.PhoneNumber, user.Password, user.AvatarPath);
+        var existingUser = await _userRepository.GetAsync(userId);
+        if (existingUser == null)
+        {
+            return NotFound();
+        }
+        await _userRepository.RemoveAsync(userId);
+        await _publishEndpoint.Publish(new UserDeleted(
+                userId
+            ));
+        return NoContent();
     }
 }

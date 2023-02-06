@@ -1,8 +1,9 @@
 using GameShop.Common;
+using GameShop.Contract.User;
 
 namespace GameShop.User.Entities
 {
-    public class UserAcount : IEntity
+    public class UserAccount : IEntity
     {
         public Guid Id { get; }
         public string UserName { get; set; }
@@ -11,7 +12,7 @@ namespace GameShop.User.Entities
         public string Password { get; set; }
         public string AvatarPath { get; set; }
 
-        public UserAcount(Guid id, string userName, string email, string phoneNumber, string passWord, string avatarPath)
+        public UserAccount(Guid id, string userName, string email, string phoneNumber, string passWord, string avatarPath)
         {
             Id = id;
             UserName = userName;
@@ -20,9 +21,18 @@ namespace GameShop.User.Entities
             Password = passWord;
             AvatarPath = avatarPath;
         }
-        public static UserAcount Create(string userName, string email, string phoneNumber, string passWord, string avatarPath, Guid? id = null)
+        public static UserAccount Create(string userName, string email, string phoneNumber, string passWord, string avatarPath, Guid? id = null)
         {
-            return new UserAcount(id ?? Guid.NewGuid(), userName, email, phoneNumber, passWord, avatarPath);
+            return new UserAccount(id ?? Guid.NewGuid(), userName, email, phoneNumber, passWord, avatarPath);
+        }
+        public static UserAccount MapUserRequest(UserRequest request, Guid? id = null)
+        {
+            return UserAccount.Create(request.UserName, request.Email, request.PhoneNumber, request.Password, request.AvatarPath, id);
+        }
+
+        public static UserResponse MapUserResponse(UserAccount user)
+        {
+            return new UserResponse(user.Id, user.UserName, user.Email, user.PhoneNumber, user.Password, user.AvatarPath);
         }
     }
 }

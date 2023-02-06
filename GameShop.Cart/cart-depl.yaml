@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gameshop.cart
+spec:
+  selector:
+    matchLabels:
+      app: gameshop.cart
+  template:
+    metadata:
+      labels:
+        app: gameshop.cart
+    spec:
+      containers:
+        - name: gameshop.cart
+          image: <Image>
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 7001
