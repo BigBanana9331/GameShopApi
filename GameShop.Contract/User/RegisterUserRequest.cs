@@ -2,17 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameShop.Contract.User
 {
-    public record UserRequest(
+    public record RegisterUserRequest(
         [Required] string UserName,
-
         [Required][EmailAddress] string Email,
-
-        [Required][StringLength(10)] string Password,
-
-        string Role,
-
-        string PhoneNumber,
-
-        string AvatarPath
+        [Required] string Password
     );
 }

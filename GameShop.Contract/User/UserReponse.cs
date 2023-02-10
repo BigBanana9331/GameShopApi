@@ -4,8 +4,10 @@ namespace GameShop.Contract.User
         Guid Id,
         string UserName,
         string Email,
+        string PasswordHash,
+        string PasswordSalt,
+        string Role,
         string PhoneNumber,
-        string Password,
         string AvatarPath
     );
 }

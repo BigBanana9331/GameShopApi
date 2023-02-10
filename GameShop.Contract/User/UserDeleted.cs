@@ -1,6 +1,4 @@
 namespace GameShop.Contract.User
 {
-    public record UserDeleted(
-        Guid Id
-    );
+    public record UserDeleted(Guid Id);
 }
