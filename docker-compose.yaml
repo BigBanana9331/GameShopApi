@@ -1,5 +1,4 @@
 # docker run -d --rm --name mongo -p 27017:27017 -v mongo:/data/db mongo
-
 version: "3.8"
 services:
   mongo:
@@ -9,6 +8,8 @@ services:
       - "27017:27017"
     volumes:
       - mongodbdata:/data/db
+    networks:
+      - backend
 
   rabbitmq:
     image: rabbitmq:management
@@ -18,7 +19,124 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmqdata:/var/lib/rabbitmq
+    networks:
+      - backend
+  
+  catalog-api:
+    image: bigbanana9331/gameshop-catalog-api
+    container_name: catalog-api
+    # environment:
+    #   - ASPNETCORE_ENVIRONMENT=Development
+    #   - ASPNETCORE_URLS=http://0.0.0.0:80
+    #   - ConnectionString=${ESHOP_AZURE_REDIS_BASKET_DB:-basketdata}
+    #   - identityUrl=http://identity-api
+    #   - IdentityUrlExternal=http://${ESHOP_EXTERNAL_DNS_NAME_OR_IP}:5105
+    #   - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
+    #   - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
+    #   - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}
+    #   - AzureServiceBusEnabled=False
+    #   - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+    #   - OrchestratorType=${ORCHESTRATOR_TYPE}
+    #   - UseLoadTest=${USE_LOADTEST:-False}
+    # - ASPNETCORE_ENVIRONMENT=Development
+    # - ASPNETCORE_URLS=http://0.0.0.0:80
+    # - ConnectionString=${ESHOP_AZURE_MARKETING_DB:-Server=sqldata;Database=Microsoft.eShopOnContainers.Services.MarketingDb;User Id=sa;Password=[PLACEHOLDER]}
+    # - MongoConnectionString=${ESHOP_AZURE_COSMOSDB:-mongodb://nosqldata}
+    # - MongoDatabase=MarketingDb
+    # - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
+    # - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
+    # - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}
+    # - identityUrl=http://identity-api
+    # - IdentityUrlExternal=http://${ESHOP_EXTERNAL_DNS_NAME_OR_IP}:5105
+    # - CampaignDetailFunctionUri=${ESHOP_AZUREFUNC_CAMPAIGN_DETAILS_URI}
+    # - PicBaseUrl=${ESHOP_AZURE_STORAGE_MARKETING_URL:-http://host.docker.internal:5110/api/v1/campaigns/[0]/pic/}
+    # - AzureStorageAccountName=${ESHOP_AZURE_STORAGE_MARKETING_NAME}
+    # - AzureStorageAccountKey=${ESHOP_AZURE_STORAGE_MARKETING_KEY}
+    # - AzureServiceBusEnabled=False
+    # - AzureStorageEnabled=False
+    # - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+    # - OrchestratorType=${ORCHESTRATOR_TYPE}
+    # - UseLoadTest=${USE_LOADTEST:-False}
+    # environment:
+    #   - ASPNETCORE_ENVIRONMENT=Development
+    #   - ASPNETCORE_URLS=http://0.0.0.0:80
+    #   - PurchaseUrl=http://webshoppingapigw
+    #   - IdentityUrl=http://10.0.75.1:5105
+    #   - MarketingUrl=http://webmarketingapigw
+    #   - CatalogUrlHC=http://catalog-api/hc
+    #   - OrderingUrlHC=http://ordering-api/hc
+    #   - IdentityUrlHC=http://identity-api/hc
+    #   - BasketUrlHC=http://basket-api/hc
+    #   - MarketingUrlHC=http://marketing-api/hc
+    #   - PaymentUrlHC=http://payment-api/hc
+    #   - SignalrHubUrl=http://${ESHOP_EXTERNAL_DNS_NAME_OR_IP}:5202
+    #   - UseCustomizationData=True
+    #   - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+    #   - OrchestratorType=${ORCHESTRATOR_TYPE}
+    #   - UseLoadTest=${USE_LOADTEST:-False}
+    build:
+      context: ./GameShop.Catalog
+    ports:
+      - "5001:80"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - backend
 
+  cart-api:
+    image: bigbanana9331/gameshop-cart-api
+    container_name: cart-api
+    build:
+      context: ./GameShop.Cart
+    ports:
+      - "7001:80"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - backend
+
+  order-api:
+    image: bigbanana9331/gameshop-order-api
+    container_name: order-api
+    build:
+      context: ./GameShop.Order
+    ports:
+      - "8001:80"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - backend
+  user-api:
+    image: bigbanana9331/gameshop-user-api
+    container_name: user-api
+    build:
+      context: ./GameShop.Catalog
+    ports:
+      - "6001:80"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - backend
+  
+  api-gateway: 
+    image: bigbanana9331/api-gateway
+    container_name: api-gateway
+    build:
+      context: ./ApiGateway
+    # expose:
+    #   - 80
+    ports:
+      - "8888:80"
+    networks:
+      - backend
+    
 volumes:
   mongodbdata:
   rabbitmqdata:
+
+networks:
+  backend:

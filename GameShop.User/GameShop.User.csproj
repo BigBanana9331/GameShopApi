@@ -8,15 +8,25 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="GameShop.Common" Version="1.0.1" />
+    <PackageReference Include="GameShop.Contract" Version="1.0.1" />
+    <!-- <PackageReference Include="Google.Protobuf" Version="3.21.12" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.51.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.51.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.51.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Masstransit.AspNetCore" Version="7.3.1" />
-    <PackageReference Include="Masstransit.RabbitMQ" Version="8.0.10" />
+    <PackageReference Include="Masstransit.RabbitMQ" Version="8.0.10" /> -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\GameShop.Common\GameShop.Common.csproj" />
-    <ProjectReference Include="..\GameShop.Contract\GameShop.Contract.csproj" />
-  </ItemGroup>
+
+
+  <!-- <ItemGroup>
+    <Protobuf Include="Protos\users.proto" GrpcServices="Server"/>
+  </ItemGroup> -->
 
 </Project>

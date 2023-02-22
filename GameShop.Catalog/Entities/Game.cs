@@ -6,11 +6,11 @@ namespace GameShop.Catalog.Entities
 
     public class Game : IEntity
     {
-        public Guid Id { get; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Platform { get; set; }
         public string ImagePath { get; set; }
-        public DateOnly DateRelease { get; set; }
+        public DateTime DateRelease { get; set; }
         public Decimal BasePrice { get; set; }
         public Decimal CurrentPrice { get; set; }
         public List<string> Genre { get; set; }
@@ -25,7 +25,7 @@ namespace GameShop.Catalog.Entities
             string name,
             string imagePath,
             string platform,
-            DateOnly dateRelease,
+            DateTime dateRelease,
             Decimal basePrice,
             Decimal currentPrice,
             List<string> genre,
@@ -51,11 +51,43 @@ namespace GameShop.Catalog.Entities
             Developer = developer;
         }
 
+        // public static Game Create(
+        //     string name,
+        //     string? imagePath = null,
+        //     string? platform = null,
+        //     DateTime? dateRelease = null,
+        //     Decimal? basePrice = null,
+        //     Decimal? currentPrice = null,
+        //     List<string>? genre = null,
+        //     Dictionary<string, string>? systemRequirement = null,
+        //     List<string>? assets = null, //list of images and videos urls
+        //     double? rating = null,
+        //     string? publisher = null,
+        //     string? developer = null,
+        //     Guid? id = null
+        // )
+        // {
+        //     return new Game(
+        //         id ?? Guid.NewGuid(),
+        //         name,
+        //         imagePath ?? string.Empty,
+        //         platform ?? string.Empty,
+        //         dateRelease ?? DateTime.UtcNow,
+        //         basePrice ?? 0,
+        //         currentPrice ?? 0,
+        //         genre ?? new List<string>(),
+        //         systemRequirement ?? new Dictionary<string, string>(),
+        //         assets ?? new List<string>(),
+        //         rating ?? 0,
+        //         publisher ?? string.Empty,
+        //         developer ?? string.Empty
+        //     );
+        // }
         public static Game Create(
             string name,
             string imagePath,
             string platform,
-            DateOnly dateRelease,
+            DateTime dateRelease,
             Decimal basePrice,
             Decimal currentPrice,
             List<string> genre,
@@ -70,17 +102,17 @@ namespace GameShop.Catalog.Entities
             return new Game(
                 id ?? Guid.NewGuid(),
                 name,
-                imagePath,
-                platform,
+                imagePath ?? string.Empty,
+                platform ?? string.Empty,
                 dateRelease,
                 basePrice,
                 currentPrice,
-                genre,
-                systemRequirement,
-                assets,
+                genre ?? new List<string>(),
+                systemRequirement ?? new Dictionary<string, string>(),
+                assets ?? new List<string>(),
                 rating,
-                publisher,
-                developer
+                publisher ?? string.Empty,
+                developer ?? string.Empty
             );
         }
         public static Game MapGameRequest(GameRequest request, Guid? id = null)
@@ -112,6 +144,8 @@ namespace GameShop.Catalog.Entities
                         game.BasePrice,
                         game.CurrentPrice,
                         game.Genre,
+                        game.SystemRequirement,
+                        game.Assets,
                         game.Rating,
                         game.Publisher,
                         game.Developer

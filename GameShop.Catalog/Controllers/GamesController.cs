@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using GameShop.Contract.Game;
 using GameShop.Catalog.Entities;
+using Microsoft.AspNetCore.Authorization;
 using GameShop.Common;
 using MassTransit;
 
@@ -19,9 +20,11 @@ namespace GameShop.Catalog.Controllers
         }
 
         [HttpPost]
+        // [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<Game>> CreateGameAsync(GameRequest request)
         {
             var game = Game.MapGameRequest(request);
+            Console.WriteLine(game.Id);
             await _gameRepository.CreateAsync(game);
             await _publishEndpoint.Publish(new GameCreated(
                 game.Id,
@@ -32,7 +35,7 @@ namespace GameShop.Catalog.Controllers
             ));
             return CreatedAtAction(
                 nameof(GetGameByIdAsync),
-                new { id = game.Id },
+                new { gameId = game.Id },
                 game
             );
         }
@@ -41,8 +44,15 @@ namespace GameShop.Catalog.Controllers
         public async Task<IEnumerable<GameResponse>> GetAllAsync()
         {
 
-            var games = (await _gameRepository.GetAllAsync()).Select(game => Game.MapGameResponse(game));
-            return games;
+            // var games = (await _gameRepository.GetAllAsync()).Select(game => Game.MapGameResponse(game));
+            // return games;
+
+            var games = await _gameRepository.GetAllAsync();
+            foreach (var item in games)
+            {
+                Console.WriteLine(item.Id);
+            }
+            return games.Select(game => Game.MapGameResponse(game));
         }
 
         // games/id
@@ -60,6 +70,7 @@ namespace GameShop.Catalog.Controllers
 
         // games/id
         [HttpPut("{gameId}")]
+        // [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateGameAsync(Guid gameId, GameRequest request)
         {
             var existingGame = await _gameRepository.GetAsync(gameId);
@@ -81,6 +92,7 @@ namespace GameShop.Catalog.Controllers
 
         // games/id
         [HttpDelete("{gameId}")]
+        // [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteGameAsync(Guid gameId)
         {
             var existingGame = await _gameRepository.GetAsync(gameId);

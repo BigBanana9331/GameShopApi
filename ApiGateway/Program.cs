@@ -3,7 +3,10 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
+// builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
+//     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+//     .AddEnvironmentVariables();
+builder.Configuration
     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 // IConfiguration configuration = new ConfigurationBuilder()
@@ -16,16 +19,16 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-await app.UseOcelot() ;
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseOcelot().Wait();
 app.UseHttpsRedirection();
-// app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -5,6 +5,11 @@ using GameShop.User.Entities;
 using GameShop.Contract.User;
 using GameShop.User.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using GameShop.Common.Settings;
+
 namespace GameShop.User.Controllers;
 
 [ApiController]
@@ -12,45 +17,52 @@ namespace GameShop.User.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IRepository<UserAccount> _userRepository;
+    private readonly IRepository<RefreshToken> _tokenRepository;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IConfiguration _configuration;
     private readonly IJwtTokenHandler _jwtTokenHandler;
     private readonly IPasswordHandler _passwordHandler;
+    // private readonly TokenValidationParameters _tokenValidationParameters;
     public UsersController
     (
-        IRepository<UserAccount> userRepository, 
-        IPublishEndpoint publishEndpoint, 
+        IRepository<UserAccount> userRepository,
+        IRepository<RefreshToken> tokenRepository,
+        IPublishEndpoint publishEndpoint,
         IConfiguration configuration,
         IJwtTokenHandler jwtTokenHandler,
         IPasswordHandler passwordHandler
+    // TokenValidationParameters tokenValidationParameters
     )
     {
         _userRepository = userRepository;
+        _tokenRepository = tokenRepository;
         _publishEndpoint = publishEndpoint;
         _configuration = configuration;
         _jwtTokenHandler = jwtTokenHandler;
         _passwordHandler = passwordHandler;
+        // _tokenValidationParameters = tokenValidationParameters;
     }
 
     [HttpPost] //post /users
-    [Authorize(Roles = "Administrator")]
+    // [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<UserAccount>> CreateUserAsync(UserRequest request)
     {
-        _passwordHandler.CreatePasswordHash(request.Password, out string passwordSalt, out string passwordHash);
+        _passwordHandler.CreatePasswordHash(request.Password, out string passwordHash, out string passwordSalt);
         var user = UserAccount.MapUserRequest(request, passwordHash, passwordSalt);
         await _userRepository.CreateAsync(user);
         await _publishEndpoint.Publish(new UserCreated(
                 user.Id
             ));
-        return CreatedAtAction(
-            nameof(GetUserByIdAsync),
-            new { id = user.Id },
-            user
-        );
+        return Ok();
+        // return CreatedAtAction(
+        //     nameof(GetUserByIdAsync),
+        //     new { id = user.Id },
+        //     user
+        // );
     }
 
     [HttpGet] // get /users
-    [Authorize(Roles = "Administrator")]
+    // [Authorize(Roles = "Administrator")]
     public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
     {
         var users = (await _userRepository.GetAllAsync()).Select(user => UserAccount.MapUserResponse(user));
@@ -58,10 +70,13 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{userId}")] // get /users/{userId}
-    [Authorize(Roles = "Administrator")]
-    [Authorize(Policy = "PersionalPolicy")]
+    // [Authorize(Roles = "Administrator")]
+    // [Authorize(Policy = "PersionalPolicy")]
+    [Authorize]
     public async Task<ActionResult<UserResponse>> GetUserByIdAsync(Guid userId)
     {
+        // var currentUser = HttpContext.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value;
+        // Console.WriteLine(currentUser);
         var user = await _userRepository.GetAsync(userId);
         if (user == null)
         {
@@ -72,10 +87,13 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{userId}")]
-    [Authorize(Roles = "Administrator")]
-    [Authorize(Policy = "PersionalPolicy")]
+    // [Authorize(Roles = "Administrator")]
+    // [Authorize(Policy = "PersionalPolicy")]
+    [Authorize]
     public async Task<IActionResult> UpdateUserAsync(Guid userId, UserRequest request)
     {
+        // var id = HttpContext.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value;
+        // Console.WriteLine(id);
         var existingUser = await _userRepository.GetAsync(userId);
         if (existingUser == null)
         {
@@ -118,7 +136,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
     [HttpPost("login")]
-    public async Task<ActionResult<UserAccount>> Login(LoginRequest request)
+    public async Task<ActionResult<AuthResult>> Login(LoginRequest request)
     {
         var user = (await _userRepository.GetAllAsync()).Where(user => user.UserName == request.UserName).FirstOrDefault();
         if (user == null)
@@ -130,8 +148,295 @@ public class UsersController : ControllerBase
             return BadRequest("UserName or Password not match");
         }
         var token = _jwtTokenHandler.CreateToken(user);
-        return Ok(token);
+        var refreshToken = _jwtTokenHandler.CreateRefeshToken();
+        var tokenEntity = new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            // AccessToken = token.AccessToken,
+            // RefreshToken = refreshToken,
+            Token = refreshToken,
+            JwtId = token.Id,
+            UserId = user.Id,
+            IsUsed = false,
+            IsRevoked = false,
+            IssuedAt = DateTime.UtcNow,
+            ExpiredAt = DateTime.UtcNow.AddHours(1)
+        };
+        await _tokenRepository.CreateAsync(tokenEntity);
+        var result = new AuthResult
+        (
+            token.AccessToken,
+            refreshToken,
+            true,
+            string.Empty
+        );
+        return Ok(result);
     }
+    [HttpPost("renew-token")]
+    public async Task<IActionResult> RenewToken(TokenRequest request)
+    {
+        var jwtTokenHandler = new JwtSecurityTokenHandler();
+        var jwtSettings = _configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+        var param = new TokenValidationParameters
+        {
+
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            // ValidIssuer = jwtSettings.Issuer,
+            // ValidAudiences = jwtSettings.Audiences,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+            // ClockSkew = TimeSpan.Zero
+        };
+
+        try
+        {
+            var tokenInVerification = jwtTokenHandler.ValidateToken(request.Token, param, out var validatedToken);
+            if (validatedToken is JwtSecurityToken jwtSecurityToken)
+            {
+                var validateResult = jwtSecurityToken.Header.Alg.Equals(
+                    SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase
+                );
+                if (!validateResult)
+                {
+                    return BadRequest("Invalid Token!");
+                }
+
+            }
+            var utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
+            Console.WriteLine(expiryDate);
+            if (expiryDate > DateTime.Now)
+            {
+                return BadRequest("Token Expired!");
+            }
+            var storedToken = await _tokenRepository.GetAsync(x => x.Token == request.RefreshToken);
+            if (storedToken == null)
+            {
+                return BadRequest("Refresh Token does not exist!");
+            }
+            if (storedToken.IsUsed)
+            {
+                return BadRequest("Refresh Token is used!");
+            }
+            if (storedToken.IsRevoked)
+            {
+                return BadRequest("Refresh Token is revoke");
+            }
+            var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+            if (storedToken.JwtId != jti)
+            {
+                return BadRequest("Token not mactch!");
+            }
+            if (storedToken.ExpiredAt < DateTime.UtcNow)
+            {
+                return BadRequest("Refeshtoken Expired!");
+            }
+            storedToken.IsRevoked = true;
+            storedToken.IsUsed = true;
+            await _tokenRepository.UpdateAsync(storedToken);
+            var user = await _userRepository.GetAsync(storedToken.UserId);
+            var token = _jwtTokenHandler.CreateToken(user);
+            var refreshToken = _jwtTokenHandler.CreateRefeshToken();
+            var tokenEntity = new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                // AccessToken = token.AccessToken,
+                // RefreshToken = refreshToken,
+                Token = refreshToken,
+                JwtId = token.Id,
+                UserId = user.Id,
+                IsUsed = false,
+                IsRevoked = false,
+                IssuedAt = DateTime.UtcNow,
+                ExpiredAt = DateTime.UtcNow.AddHours(1)
+            };
+            await _tokenRepository.CreateAsync(tokenEntity);
+            var result = new AuthResult
+            (
+                token.AccessToken,
+                refreshToken,
+                true,
+                string.Empty
+            );
+            return Ok(result);
+        }
+        catch (System.Exception)
+        {
+
+            return BadRequest("Something wen't wrong!");
+        }
+    }
+
+    private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+    {
+        var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+        return dateTimeVal;
+    }
+
+
+    // [HttpPost("renew-token")]
+    // public async Task<ActionResult<AuthResult>> RefreshToken(TokenRequest request)
+    // {
+    //     // var refreshToken = (await _tokenRepository.GetAllAsync()).Select(t => t.Token.Equals(request.RefreshToken)&& t.IsUsed ==false && t.IsRevoked ==false);
+    //     // if 
+    //     if (ModelState.IsValid)
+    //     {
+    //         var result = await VerifyAndGenerateToken(request);
+    //         if (result == null)
+    //         {
+    //             return BadRequest("Invalid Token");
+    //         }
+    //         return Ok(result);
+    //     }
+    //     return BadRequest();
+    // }
+
+    // private async Task<ActionResult<AuthResult>> VerifyAndGenerateToken(TokenRequest request)
+    // {
+    //     var jwtTokenHandler = new JwtSecurityTokenHandler();
+    //     var jwtSettings = _configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+    //     // _tokenValidationParameters.ValidateLifetime = false;
+    //     var param = new TokenValidationParameters
+    //     {
+    //         ValidateIssuerSigningKey = true,
+    //         ValidateIssuer = true,
+    //         ValidateAudience = true,
+    //         ValidateLifetime = true,
+
+    //         ValidIssuer = jwtSettings.Issuer,
+    //         ValidAudiences = jwtSettings.Audiences,
+    //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    //     };
+    //     var tokenInVerification = jwtTokenHandler.ValidateToken(request.Token, param, out var validatedToken);
+    //     if (validatedToken is JwtSecurityToken jwtSecurityToken)
+    //     {
+    //         var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
+    //         if (result == false)
+    //         {
+    //             // return new TokenResponse(
+    //             //     null,
+    //             //     null,
+    //             //     false
+    //             // );
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Something wen't wrong!"
+    //             ));
+    //         }
+    //         var utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+    //         var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
+    //         if (expiryDate > DateTime.Now)
+    //         {
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Token Expired!"
+    //             ));
+    //         }
+    //         var storedToken = await _tokenRepository.GetAsync(x => x.Token == request.RefreshToken);
+    //         if (storedToken == null)
+    //         {
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Invalid Token"
+    //             ));
+    //         }
+    //         if (storedToken.IsUsed)
+    //         {
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Invalid Token"
+    //             ));
+    //         }
+    //         if (storedToken.IsRevoked)
+    //         {
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Invalid Token"
+    //             ));
+    //         }
+    //         var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+    //         if (storedToken.JwtId != jti)
+    //         {
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Invalid Token"
+    //             ));
+    //         }
+    //         if (storedToken.ExpiredAt < DateTime.UtcNow)
+    //         {
+    //             return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Token Expired!"
+    //             ));
+    //         }
+    //         storedToken.IsUsed = true;
+    //         storedToken.IsRevoked = true;
+    //         await _tokenRepository.UpdateAsync(storedToken);
+    //         var user = await _userRepository.GetAsync(storedToken.UserId);
+    //         var token = _jwtTokenHandler.CreateToken(user);
+    //         var refreshToken = _jwtTokenHandler.CreateRefeshToken();
+    //         var tokenEntity = new RefreshToken
+    //         {
+    //             Id = Guid.NewGuid(),
+    //             // AccessToken = token.AccessToken,
+    //             // RefreshToken = refreshToken,
+    //             Token = refreshToken,
+    //             JwtId = token.Id,
+    //             UserId = user.Id,
+    //             IsUsed = false,
+    //             IsRevoked = false,
+    //             IssuedAt = DateTime.UtcNow,
+    //             ExpiredAt = DateTime.UtcNow.AddHours(1)
+    //         };
+    //         await _tokenRepository.CreateAsync(tokenEntity);
+    //         var response = new AuthResult
+    //         (
+    //             token.AccessToken,
+    //             refreshToken,
+    //             true,
+    //             string.Empty
+    //         );
+    //         return Ok(response);
+    //     }
+    //     // return new TokenResponse(
+    //     //             null,
+    //     //             null,
+    //     //             false
+    //     // );
+    //     return BadRequest(new AuthResult
+    //             (
+    //                 null,
+    //                 null,
+    //                 false,
+    //                 "Something wen't wrong"
+    //             ));
+    // }
+
 
 
 

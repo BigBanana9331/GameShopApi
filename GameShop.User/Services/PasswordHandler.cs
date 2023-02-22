@@ -12,11 +12,11 @@ namespace GameShop.User.Services
 
         public bool VerifyPasswordHash(string password, string passwordHash, string passwordSalt)
         {
-            
+
             var enteredPasswordHash = BCrypt.Net.BCrypt.HashPassword(password, passwordSalt);
             // Console.WriteLine(enteredPasswordHash);
-            return BCrypt.Net.BCrypt.Verify(enteredPasswordHash, passwordHash);
-            // return enteredPasswordHash == passwordHash;
+            // return BCrypt.Net.BCrypt.Verify(enteredPasswordHash, passwordHash);
+            return enteredPasswordHash == passwordHash;
         }
     }
 }

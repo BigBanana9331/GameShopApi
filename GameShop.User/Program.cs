@@ -12,6 +12,7 @@ builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 
 builder.Services.AddMongo()
                 .AddMongoRepository<UserAccount>("users")
+                .AddMongoRepository<RefreshToken>("tokens")
                 .AddMassTransitWithRabbitMq();
 
 builder.Services.AddServices();

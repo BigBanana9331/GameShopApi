@@ -11,11 +11,26 @@ namespace GameShop.Common.Jwt
 {
     public static class Extensions
     {
-        
 
-        public static IServiceCollection AddCustomJwtAuthentication(this IServiceCollection services, ConfigurationManager configuration){
+
+        public static IServiceCollection AddCustomJwtAuthentication(this IServiceCollection services, ConfigurationManager configuration)
+        {
+
+
             // services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+            // var tokenValidationParameters = new TokenValidationParameters
+            // {
+            //     ValidateIssuerSigningKey = true,
+            //     ValidateIssuer = true,
+            //     ValidateAudience = true,
+            //     ValidateLifetime = true,
+
+            //     ValidIssuer = jwtSettings.Issuer,
+            //     ValidAudiences = jwtSettings.Audiences,
+            //     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+            // };
+            // services.AddSingleton(tokenValidationParameters);
             // services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
             services
                 .AddAuthentication(option =>
@@ -31,13 +46,15 @@ namespace GameShop.Common.Jwt
                     option.SaveToken = true;
                     option.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
+
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,
-                        
+
                         ValidIssuer = jwtSettings.Issuer,
-                        ValidAudience = jwtSettings.Audiences[0],
+                        ValidAudiences = jwtSettings.Audiences,
+
+                        ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
                     };
                 });

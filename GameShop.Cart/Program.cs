@@ -4,10 +4,12 @@
 using GameShop.Cart.Entities;
 using GameShop.Common.MongoDB;
 using GameShop.Common.MassTransit;
+using GameShop.Common.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddMongo()
             .AddMongoRepository<CartItem>("carts")
             .AddMongoRepository<CatalogItem>("catalogs")

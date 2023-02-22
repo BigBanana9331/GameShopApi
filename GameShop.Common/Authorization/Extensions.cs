@@ -8,13 +8,18 @@ namespace GameShop.Common.Authorization
         public static IServiceCollection AddMassTransitWithRabbitMq(this IServiceCollection services)
         {
             services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
-            services.AddAuthorization(options =>{
-                options.AddPolicy("Administrator", policy =>{
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", policy =>
+                {
                     policy.RequireRole("Administrator");
                 });
-                options.AddPolicy("PersionalPolicy", policy =>{
+                options.AddPolicy("PersionalPolicy", policy =>
+                {
                     policy.RequireClaim("ID");
+                    // policy.RequireAssertion(context => context.User.HasClaim(c => ())
 
+                    // });
                 });
                 options.AddPolicy("BadgeEntry", policy =>
                     policy.RequireAssertion(context => context.User.HasClaim(c =>

@@ -76,9 +76,9 @@ namespace GameShop.User.Entities
         }
         public static UserAccount MapRegisterUserRequest
         (
-            RegisterUserRequest request, 
-            string passwordHash, 
-            string passwordSalt, 
+            RegisterUserRequest request,
+            string passwordHash,
+            string passwordSalt,
             Guid? id = null
         )
         {
@@ -93,9 +93,9 @@ namespace GameShop.User.Entities
         }
         public static UserAccount MapUserRequest
         (
-            UserRequest request, 
-            string passwordHash, 
-            string passwordSalt, 
+            UserRequest request,
+            string passwordHash,
+            string passwordSalt,
             Guid? id = null
         )
         {

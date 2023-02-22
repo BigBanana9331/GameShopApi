@@ -1,9 +1,12 @@
 using GameShop.Common.MongoDB;
 using GameShop.Catalog.Entities;
+using GameShop.Common.Jwt;
 using GameShop.Common.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+// builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddMongo()
                 .AddMongoRepository<Game>("games")
                 .AddMassTransitWithRabbitMq();

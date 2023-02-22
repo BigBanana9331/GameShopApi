@@ -5,6 +5,7 @@ namespace GamesShop.Contract.Order
         Guid OrderId,
         Guid GameId,
         int Quantity,
-        decimal PurchasedPrice
+        decimal PurchasedPrice,
+        List<string> Key
     );
 }
