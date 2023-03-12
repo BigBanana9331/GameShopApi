@@ -1,11 +1,19 @@
 using GameShop.Common.MongoDB;
 using GameShop.Catalog.Entities;
+using GameShop.Common.Jwt;
 using GameShop.Common.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
-builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
-builder.Services.AddMongo().AddMongoRepository<Game>("games").AddMassTransitWithRabbitMq();
+// builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+builder.Services.AddCustomJwtAuthentication(builder.Configuration);
+builder.Services.AddMongo()
+                .AddMongoRepository<Game>("games")
+                .AddMassTransitWithRabbitMq();
+builder.Services.AddControllers(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

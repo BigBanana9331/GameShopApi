@@ -5,10 +5,12 @@ namespace GameShop.Contract.Game
         string Name,
         string ImagePath,
         string Platform,
-        DateOnly DateRelease,
+        DateTime DateRelease,
         decimal BasePrice,
         decimal CurrentPrice,
         List<string> Genre,
+        Dictionary<string, string> SystemRequirement,
+        List<string> Assets,
         double Rating,
         string Publisher,
         string Developer

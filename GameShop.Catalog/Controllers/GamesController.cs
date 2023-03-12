@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using GameShop.Contract.Game;
 using GameShop.Catalog.Entities;
+using Microsoft.AspNetCore.Authorization;
 using GameShop.Common;
 using MassTransit;
 
@@ -19,9 +20,11 @@ namespace GameShop.Catalog.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<Game>> CreateGameAsync(GameRequest request)
         {
             var game = Game.MapGameRequest(request);
+            Console.WriteLine(game.Id);
             await _gameRepository.CreateAsync(game);
             await _publishEndpoint.Publish(new GameCreated(
                 game.Id,
@@ -32,7 +35,7 @@ namespace GameShop.Catalog.Controllers
             ));
             return CreatedAtAction(
                 nameof(GetGameByIdAsync),
-                new { id = game.Id },
+                new { gameId = game.Id },
                 game
             );
         }
@@ -43,13 +46,20 @@ namespace GameShop.Catalog.Controllers
 
             var games = (await _gameRepository.GetAllAsync()).Select(game => Game.MapGameResponse(game));
             return games;
+
+            // var games = await _gameRepository.GetAllAsync();
+            // foreach (var item in games)
+            // {
+            //     Console.WriteLine(item.Id);
+            // }
+            // return games.Select(game => Game.MapGameResponse(game));
         }
 
         // games/id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GameResponse>> GetGameByIdAsync(Guid id)
+        [HttpGet("{gameId}")]
+        public async Task<ActionResult<GameResponse>> GetGameByIdAsync(Guid gameId)
         {
-            var game = await _gameRepository.GetAsync(id);
+            var game = await _gameRepository.GetAsync(gameId);
             if (game == null)
             {
                 return NotFound();
@@ -59,15 +69,16 @@ namespace GameShop.Catalog.Controllers
         }
 
         // games/id
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateGameAsync(Guid id, GameRequest request)
+        [HttpPut("{gameId}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> UpdateGameAsync(Guid gameId, GameRequest request)
         {
-            var existingGame = await _gameRepository.GetAsync(id);
+            var existingGame = await _gameRepository.GetAsync(gameId);
             if (existingGame == null)
             {
                 return NotFound();
             }
-            var game = Game.MapGameRequest(request, id);
+            var game = Game.MapGameRequest(request, gameId);
             await _gameRepository.UpdateAsync(game);
             await _publishEndpoint.Publish(new GameUpdated(
                 game.Id,
@@ -80,16 +91,17 @@ namespace GameShop.Catalog.Controllers
         }
 
         // games/id
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGameAsync(Guid id)
+        [HttpDelete("{gameId}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteGameAsync(Guid gameId)
         {
-            var existingGame = await _gameRepository.GetAsync(id);
+            var existingGame = await _gameRepository.GetAsync(gameId);
             if (existingGame == null)
             {
                 return NotFound();
             }
-            await _gameRepository.RemoveAsync(id);
-            await _publishEndpoint.Publish(new GameDeleted(id));
+            await _gameRepository.RemoveAsync(gameId);
+            await _publishEndpoint.Publish(new GameDeleted(gameId));
             return NoContent();
         }
     }

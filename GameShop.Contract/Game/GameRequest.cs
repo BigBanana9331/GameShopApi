@@ -6,7 +6,7 @@ namespace GameShop.Contract.Game
         [Required] string Name,
         string ImagePath,
         string Platform,
-        DateOnly DateRelease,
+        DateTime DateRelease,
         [Range(0, 10000000)] decimal BasePrice,
         [Range(0, 10000000)] decimal CurrentPrice,
         List<string> Genre,

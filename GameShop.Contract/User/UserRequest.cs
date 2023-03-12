@@ -4,9 +4,15 @@ namespace GameShop.Contract.User
 {
     public record UserRequest(
         [Required] string UserName,
-        [EmailAddress]string Email,
-        [StringLength(10)] string PhoneNumber,
-        [Required]string Password,
+
+        [Required][EmailAddress] string Email,
+
+        [Required][StringLength(10)] string Password,
+
+        string Role,
+
+        string PhoneNumber,
+
         string AvatarPath
     );
 }

@@ -20,7 +20,8 @@ namespace GameShop.Common.MassTransit
                     var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                     configurator.Host(rabbitMQSettings.Host);
                     configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
-                    configurator.UseMessageRetry(retryConfigurator => {
+                    configurator.UseMessageRetry(retryConfigurator =>
+                    {
                         retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
                     });
                 });
