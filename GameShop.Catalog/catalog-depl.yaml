@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gameshop.catalog
+spec:
+  selector:
+    matchLabels:
+      app: gameshop.catalog
+  template:
+    metadata:
+      labels:
+        app: gameshop.catalog
+    spec:
+      containers:
+        - name: gameshop.catalog
+          image: <Image>
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5001
