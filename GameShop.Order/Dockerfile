@@ -6,10 +6,11 @@ EXPOSE 8001
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["packages", "/src/packages"]
+# COPY ["../packages", "/src/packages"]
 RUN dotnet nuget add source "/src/packages"
-COPY ["GameShop.Order.csproj", "."] 
+COPY ["./GameShop.Order/GameShop.Order.csproj", "."] 
 RUN dotnet restore "GameShop.Order.csproj"
-COPY . .
+COPY ./GameShop.Order .
 
 WORKDIR /src
 RUN dotnet build "GameShop.Order.csproj" -c Release -o /app/build

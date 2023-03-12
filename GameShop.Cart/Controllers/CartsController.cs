@@ -84,8 +84,6 @@ namespace GameShop.Cart.Controller
         }
 
     }
-
-
 }
 
 

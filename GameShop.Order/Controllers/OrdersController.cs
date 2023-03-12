@@ -41,7 +41,11 @@ namespace GameShop.Order.Controllers
             }
             var order = OrderSumary.MapOrderRequest(request);
             await _ordersRepository.CreateAsync(order);
-            return Ok();
+            return CreatedAtAction(
+                nameof(GetOrderByIdAsync),
+                new {orderId = order.Id},
+                order
+            );
         }
 
         [HttpGet]
@@ -84,6 +88,7 @@ namespace GameShop.Order.Controllers
         }
 
         [HttpDelete("{orderId}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> DeleteOrderAsync(Guid orderId)
         {
             var order = await _ordersRepository.GetAsync(orderId);

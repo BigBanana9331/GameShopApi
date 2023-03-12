@@ -5,10 +5,11 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["packages", "/src/packages"]
+# COPY ["../packages", "/src/packages"]
 RUN dotnet nuget add source "/src/packages"
-COPY ["GameShop.Catalog.csproj", "."] 
+COPY ["./GameShop.Catalog/GameShop.Catalog.csproj", "."] 
 RUN dotnet restore "GameShop.Catalog.csproj"
-COPY . .
+COPY ./GameShop.Catalog .
 
 WORKDIR /src
 RUN dotnet build "GameShop.Catalog.csproj" -c Release -o /app/build

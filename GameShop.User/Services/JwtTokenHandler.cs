@@ -41,8 +41,8 @@ namespace GameShop.User.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Aud, "https://localhost:6001"),
-                new Claim(JwtRegisteredClaimNames.Iss, "https://localhost:6001"),
+                new Claim(JwtRegisteredClaimNames.Aud, string.Join(", ",jwtSettings.Audiences)),
+                new Claim(JwtRegisteredClaimNames.Iss, jwtSettings.Issuer),
                 // new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
                 new Claim("ID", user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role)

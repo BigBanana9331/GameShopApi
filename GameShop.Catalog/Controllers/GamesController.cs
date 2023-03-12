@@ -20,7 +20,7 @@ namespace GameShop.Catalog.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<Game>> CreateGameAsync(GameRequest request)
         {
             var game = Game.MapGameRequest(request);
@@ -44,15 +44,15 @@ namespace GameShop.Catalog.Controllers
         public async Task<IEnumerable<GameResponse>> GetAllAsync()
         {
 
-            // var games = (await _gameRepository.GetAllAsync()).Select(game => Game.MapGameResponse(game));
-            // return games;
+            var games = (await _gameRepository.GetAllAsync()).Select(game => Game.MapGameResponse(game));
+            return games;
 
-            var games = await _gameRepository.GetAllAsync();
-            foreach (var item in games)
-            {
-                Console.WriteLine(item.Id);
-            }
-            return games.Select(game => Game.MapGameResponse(game));
+            // var games = await _gameRepository.GetAllAsync();
+            // foreach (var item in games)
+            // {
+            //     Console.WriteLine(item.Id);
+            // }
+            // return games.Select(game => Game.MapGameResponse(game));
         }
 
         // games/id
@@ -70,7 +70,7 @@ namespace GameShop.Catalog.Controllers
 
         // games/id
         [HttpPut("{gameId}")]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateGameAsync(Guid gameId, GameRequest request)
         {
             var existingGame = await _gameRepository.GetAsync(gameId);
@@ -92,7 +92,7 @@ namespace GameShop.Catalog.Controllers
 
         // games/id
         [HttpDelete("{gameId}")]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteGameAsync(Guid gameId)
         {
             var existingGame = await _gameRepository.GetAsync(gameId);
