@@ -1,33 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-api
+  name: rabbitmq
 spec:
   selector:
     matchLabels:
-      app: catalog-api
+      app: rabbitmq
   template:
     metadata:
       labels:
-        app: catalog-api
+        app: rabbitmq
     spec:
       containers:
-        - name: catalog-api
-          image: bigbanana9331/catalog-api
+        - name: rabbitmq
+          image: rabbitmq
           resources:
             limits:
               memory: "128Mi"
               cpu: "500m"
           ports:
-            - containerPort: 5001
+            - containerPort: 7249
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog-api
+  name: rabbitmq
 spec:
   type: ClusterIP
   ports:
-  - port: 80
+  - port: 5672
+    targetPort: 5672
+  - port: 15672
+    targetPort: 15672
   selector:
-    app: catalog-api
+    app: rabbitmq

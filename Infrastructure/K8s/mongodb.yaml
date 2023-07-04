@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce 
+  volumeName: pv
+  resources:
+    requests:
+      storage: 1Gi
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/mongo
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  serviceName: mongodb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        selector: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+      nodeSelector:
+        size: large
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
+---
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   labels:
+#     app: mongo
+#   name: mongo
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: mongo
+#   template:
+#     metadata:
+#       labels:
+#         app: mongo
+#     spec:
+#       containers:
+#       - name: mongo
+#         iamge: mongo
+#         volumeMounts:
+#         - name: "mongo-data-dir"
+#           mountPath: "/data/db"
+#       volumes:
+#       - name: "mongo-data-dir"
+#         persistentVolumeClaim:
+#           claimName: "pvc"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+spec:
+  clusterIP: None
+  selector:
+    app: mongodb
