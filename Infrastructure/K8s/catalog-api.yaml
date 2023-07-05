@@ -1,26 +1,25 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: catalog-api
 spec:
-  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-api
   template:
     metadata:
       labels:
         app: catalog-api
     spec:
       containers:
-      - name: catalog-api
-        image: bigbanana9331/gameshop-catalog-api
-        ports:
-        - containerPort: 80
-        env:
-        - name: ASPNETCORE_URLS
-          value: http://*:80
-  selector:
-    matchLabels:
-      app: catalog-api
+        - name: catalog-api
+          image: bigbanana9331/catalog-api
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5001
 ---
 apiVersion: v1
 kind: Service
