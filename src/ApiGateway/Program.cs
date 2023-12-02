@@ -3,15 +3,9 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
-//     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
-//     .AddEnvironmentVariables();
 builder.Configuration
     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
-// IConfiguration configuration = new ConfigurationBuilder()
-//                             .AddJsonFile("ocelot.json")
-//                             .Build();
 builder.Services.AddOcelot(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

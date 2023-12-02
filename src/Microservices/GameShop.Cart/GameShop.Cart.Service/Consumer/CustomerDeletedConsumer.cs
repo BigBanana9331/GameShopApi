@@ -1,4 +1,3 @@
-using MassTransit;
 using GameShop.Cart.Contract;
 using GameShop.Common;
 using GameShop.Cart.Entities;

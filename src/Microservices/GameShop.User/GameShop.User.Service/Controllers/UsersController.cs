@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using GameShop.Common;
-using MassTransit;
 using GameShop.User.Entities;
 using GameShop.User.Contract;
 using GameShop.User.Services;
