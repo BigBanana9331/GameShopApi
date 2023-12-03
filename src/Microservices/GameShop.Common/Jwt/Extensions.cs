@@ -16,22 +16,7 @@ namespace GameShop.Common.Jwt
         public static IServiceCollection AddCustomJwtAuthentication(this IServiceCollection services, ConfigurationManager configuration)
         {
 
-
-            // services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
-            // var tokenValidationParameters = new TokenValidationParameters
-            // {
-            //     ValidateIssuerSigningKey = true,
-            //     ValidateIssuer = true,
-            //     ValidateAudience = true,
-            //     ValidateLifetime = true,
-
-            //     ValidIssuer = jwtSettings.Issuer,
-            //     ValidAudiences = jwtSettings.Audiences,
-            //     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
-            // };
-            // services.AddSingleton(tokenValidationParameters);
-            // services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
             services
                 .AddAuthentication(option =>
                 {
@@ -41,7 +26,6 @@ namespace GameShop.Common.Jwt
                 })
                 .AddJwtBearer(option =>
                 {
-                    // var jwtSettings = option.Configuration.
                     option.RequireHttpsMetadata = true;
                     option.SaveToken = true;
                     option.TokenValidationParameters = new TokenValidationParameters
@@ -60,10 +44,5 @@ namespace GameShop.Common.Jwt
                 });
             return services;
         }
-        // public static IServiceCollection AddAuth(this IServiceCollection services, ConfigurationManager configuration){
-        //     services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-        //     services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-        //     services.AddAuthentication();
-        // }
     }
 }
