@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using GameShop.Common.Settings;
-
+using MassTransit;
 namespace GameShop.User.Controllers;
 
 [ApiController]

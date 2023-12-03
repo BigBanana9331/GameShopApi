@@ -1,7 +1,5 @@
-using System.Reflection;
 using System.Text;
 using GameShop.Common.Settings;
-using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

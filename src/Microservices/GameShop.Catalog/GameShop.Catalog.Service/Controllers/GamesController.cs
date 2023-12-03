@@ -3,6 +3,7 @@ using GameShop.Catalog.Contract;
 using GameShop.Catalog.Entities;
 using Microsoft.AspNetCore.Authorization;
 using GameShop.Common;
+using MassTransit;
 
 namespace GameShop.Catalog.Controllers
 {

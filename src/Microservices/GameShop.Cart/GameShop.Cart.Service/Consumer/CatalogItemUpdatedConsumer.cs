@@ -1,6 +1,7 @@
 using GameShop.Common;
 using GameShop.Cart.Entities;
 using GameShop.Cart.Contract;
+using MassTransit;
 namespace GameShop.Cart.Consumer
 {
     public class CatalogItemUpdatedConsumer : IConsumer<GameUpdated>

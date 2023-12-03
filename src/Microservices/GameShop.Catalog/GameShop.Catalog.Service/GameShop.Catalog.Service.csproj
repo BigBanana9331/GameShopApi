@@ -7,13 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GameShop.Common" Version="1.0.0" />
+    <PackageReference Include="GameShop.Common" Version="1.0.1" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GameShop.Catalog.Contract\GameShop.Catalog.Contract.csproj" />
+    <!-- <ProjectReference Include="..\..\GameShop.Common\GameShop.Common.csproj" /> -->
   </ItemGroup>
 
 </Project>

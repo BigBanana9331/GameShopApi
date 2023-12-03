@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: ./Microservices/GameShop.Catalog/Dockerfile
     ports:
-      - "5001:80"
+      - "5001:8080"
     depends_on:
       - mongo
       - rabbitmq
@@ -44,7 +44,7 @@ services:
       dockerfile: ./Microservices/GameShop.Cart/Dockerfile
 
     ports:
-      - "7001:80"
+      - "7001:8080"
     depends_on:
       - mongo
       - rabbitmq
@@ -58,7 +58,7 @@ services:
       context: .
       dockerfile: ./Microservices/GameShop.Order/Dockerfile
     ports:
-      - "8001:80"
+      - "8001:8080"
     depends_on:
       - mongo
       - rabbitmq
@@ -71,7 +71,7 @@ services:
       context: .
       dockerfile: ./Microservices/GameShop.User/Dockerfile
     ports:
-      - "6001:80"
+      - "6001:8080"
     depends_on:
       - mongo
       - rabbitmq
@@ -85,7 +85,7 @@ services:
       context: ./ApiGateway
       dockerfile: ./ApiGateway/Dockerfile
     ports:
-      - "8888:80"
+      - "8888:8080"
     networks:
       - backend
     

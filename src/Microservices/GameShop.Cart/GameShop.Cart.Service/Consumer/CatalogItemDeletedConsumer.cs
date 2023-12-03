@@ -1,7 +1,7 @@
 using GameShop.Cart.Contract;
 using GameShop.Common;
 using GameShop.Cart.Entities;
-
+using MassTransit;
 namespace GameShop.Cart.Consumer
 {
     public class CatalogItemDeletedConsumer : IConsumer<GameDeleted>
